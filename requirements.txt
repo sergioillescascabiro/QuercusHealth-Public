@@ -1,0 +1,25 @@
+# Computer Vision & Deep Learning
+torch
+torchvision
+ultralytics
+deepforest
+
+# Geospatial & Data Management
+geopandas
+rasterio
+roboflow
+
+# Data Science Utilities
+jupyter
+pandas
+numpy
+matplotlib
+Pillow
+
+# Automation & Utilities
+pyautogui       # Keyboard/mouse automation for the scanner scripts
+tqdm            # Progress bar in scanner.py
+opencv-python   # Image stitching in stitcher.py
+
+# Environment management
+python-dotenv   # Load API keys from .env
