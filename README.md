@@ -8,22 +8,29 @@
 ## Overview
 
 The Spanish Dehesa is a unique agro-sylvo-pastoral ecosystem dominated by *Quercus* oak trees.
-*La Seca* (*Phytophthora cinnamomi*) is a root-rot disease that has killed hundreds of thousands of oaks across Extremadura and Andalucía.
+*La Seca* (*Phytophthora cinnamomi*) is a root-rot disease that kills oaks at landscape scale across Extremadura and Andalucía.
 
 This project builds an automated pipeline to:
 1. Capture satellite imagery of Dehesa areas via Google Earth Pro.
-2. Detect oak trees using a pre-trained [DeepForest](https://deepforest.readthedocs.io/) model (RetinaNet backbone).
-3. Classify trees as **Healthy** or **Dead (La Seca)** using temporally validated annotations.
+2. Detect oak trees using a pre-trained [DeepForest](https://deepforest.readthedocs.io/) model (RetinaNet + ResNet-50 + FPN).
+3. Classify each tree as **Healthy** or **Dead (La Seca)** using temporally validated annotations.
 
-### Baseline results (Phase 2 — zero-shot evaluation)
+| | August 2019 | February 2024 |
+|--|--|--|
+| | ![2019](data/sample_2019aug.png) | ![2024](data/sample_2024feb.png) |
+| | Early La Seca — thin radiating crown visible in summer | Same tree absent — confirmed dead. Zero field visits. |
+
+### Baseline results (Phase 2 — zero-shot evaluation on 14 annotated Dehesa tiles)
 
 | Metric | NEON benchmark | Dehesa zero-shot | Drop |
 |--------|---------------|-----------------|------|
-| Precision | 0.73 | 0.51 | −22 pp |
-| Recall    | 0.63 | 0.23 | −40 pp |
-| F1        | 0.68 | 0.31 | −37 pp |
+| Precision | 0.73 | — | — |
+| Recall    | 0.63 | — | — |
+| F1        | 0.68 | — | — |
 
-Domain shift is confirmed. Phase 3 fine-tunes the model on annotated Dehesa data.
+> Run `02_annotation_evaluation.ipynb` to fill in the Dehesa column with real results.
+
+Domain shift confirmed. Phase 3 fine-tunes on annotated Dehesa data. Target: **F1 > 0.60**.
 
 ---
 
@@ -31,12 +38,19 @@ Domain shift is confirmed. Phase 3 fine-tunes the model on annotated Dehesa data
 
 ```
 QuercusHealth-Public/
-├── data/               # Sample satellite imagery (committed)
-├── data_scrape/        # Capture scripts; tiles are gitignored (run scanner.py locally)
-├── models/             # Weights are downloaded automatically by DeepForest
-├── notebooks/          # Main entry point — run these to reproduce all results
-├── scripts/            # Standalone data acquisition and evaluation scripts
-├── .env.example        # Template for API credentials
+├── data/
+│   ├── test/
+│   │   ├── images/         # 14 annotated Dehesa tiles (committed, ~2 MB)
+│   │   └── _annotations.csv# Ground truth — DeepForest CSV format (Tree / Seca)
+│   ├── sample_2019aug.png  # Illustrative: summer 2019 — La Seca symptoms
+│   └── sample_2024feb.png  # Illustrative: 2024 — confirmed dead tree
+├── data_scrape/            # Capture scripts; 1,600 tiles are gitignored (local only)
+├── models/                 # Weights auto-downloaded by DeepForest (gitignored)
+├── notebooks/              # Main entry point — run in order
+│   ├── 01_architecture_and_domain_shift.ipynb
+│   └── 02_annotation_evaluation.ipynb
+├── scripts/                # Data acquisition and evaluation utilities
+├── .env.example            # Template for API credentials
 └── requirements.txt
 ```
 
@@ -50,75 +64,62 @@ QuercusHealth-Public/
 git clone https://github.com/<your-user>/QuercusHealth-Public.git
 cd QuercusHealth-Public
 python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Set up credentials
+### 2. Credentials (optional)
+
+The notebooks run without any API key — the 14 annotated test images are already committed in `data/test/`.
+
+If you want to download the full dataset from Roboflow:
 
 ```bash
 cp .env.example .env
 # Edit .env and paste your Roboflow API key
+# Get yours at: https://app.roboflow.com/settings/api
+python scripts/evaluate_baseline.py
 ```
 
-Get your free Roboflow API key at [app.roboflow.com/settings/api](https://app.roboflow.com/settings/api).
-
 ### 3. Run the notebooks
-
-Open Jupyter and run the notebooks in order:
-
-| Notebook | Description |
-|----------|-------------|
-| `notebooks/Midterm_Exploration.ipynb` | EDA, domain shift analysis, Phase 1 baseline |
-| `notebooks/Phase2_Evaluation.ipynb` | Annotation-based evaluation, score_thresh sweep, Phase 3 roadmap |
 
 ```bash
 jupyter notebook
 ```
 
-The notebooks download the annotated dataset from Roboflow automatically using your API key.
+| Notebook | What it does |
+|----------|-------------|
+| `01_architecture_and_domain_shift.ipynb` | Inspects DeepForest architecture, runs zero-shot on NEON and 14 Dehesa tiles, proves domain shift statistically (KS test + Mann-Whitney U), sweeps hyperparameters |
+| `02_annotation_evaluation.ipynb` | Uses ground-truth annotations to compute Precision/Recall/F1, score_thresh sweep with real metrics, temporal La Seca validation, Phase 3 roadmap |
+
+Run **01 first**, then **02**. DeepForest downloads model weights automatically on first run (~400 MB).
 
 ---
 
 ## Scripts
 
-These scripts automate satellite image acquisition. Run them from the project root.
-
 | Script | Description |
 |--------|-------------|
-| `scripts/scanner.py` | Captures a screenshot grid from Google Earth Pro via PyAutoGUI. Zig-zag traversal, configurable grid and screen region. |
-| `scripts/scanner_ge.py` | Legacy version using Google Earth's native export dialog (Ctrl+Alt+S). Useful as a fallback. |
-| `scripts/stitcher.py` | Stitches captured PNG tiles into a seamless mosaic using OpenCV (SCANS mode). |
-| `scripts/evaluate_baseline.py` | Standalone zero-shot evaluation pipeline (downloads dataset, converts labels, evaluates, saves overlays). |
-
-### Typical data acquisition workflow
+| `scripts/scanner.py` | Captures a screenshot grid from Google Earth Pro via PyAutoGUI. Zig-zag traversal, configurable grid and region. |
+| `scripts/scanner_ge.py` | Legacy scanner using Google Earth's native export dialog (Ctrl+Alt+S). |
+| `scripts/stitcher.py` | Stitches PNG tiles into a seamless mosaic using OpenCV (SCANS mode). |
+| `scripts/evaluate_baseline.py` | Standalone evaluation: downloads from Roboflow, converts labels, evaluates, saves prediction overlays. Requires `.env`. |
 
 ```bash
-# 1. Edit ROWS/COLS in scanner.py, then capture tiles
+# Capture satellite tiles (edit ROWS/COLS first)
 python scripts/scanner.py
 
-# 2. Stitch tiles into a mosaic
+# Stitch into mosaic
 python scripts/stitcher.py
 ```
 
-Captured tiles are saved to `data_scrape/captures/` and are gitignored (too large for GitHub).
+Captured tiles are saved to `data_scrape/captures/` (gitignored — too large for GitHub).
 
 ---
 
 ## Tech Stack
 
-- **Model**: [DeepForest](https://deepforest.readthedocs.io/) — RetinaNet pre-trained on NEON aerial imagery
-- **Annotations**: [Roboflow](https://roboflow.com/) — YOLOv8 format, 800×800 px tiles
+- **Model**: [DeepForest](https://deepforest.readthedocs.io/) — RetinaNet (ResNet-50 + FPN), pre-trained on NEON aerial imagery
+- **Annotations**: [Roboflow](https://universe.roboflow.com/sergios-workspace-svg91/quercushealth-dehesa) — 14 tiles, 210 bounding boxes, 2 classes
 - **Training framework**: PyTorch + PyTorch Lightning
 - **Image capture**: PyAutoGUI + OpenCV
-- **Data versioning**: DVC (Google Drive remote)
-
----
-
-## Dataset
-
-Annotations are hosted on Roboflow ([QuercusHealth-Dehesa v1](https://app.roboflow.com/sergios-workspace-svg91/quercushealth-dehesa)).
-The notebooks download the dataset automatically.
-
-Sample imagery in `data/` shows the study zone in August 2019 and February 2024,
-used for multi-temporal validation of *La Seca* ground truth.
