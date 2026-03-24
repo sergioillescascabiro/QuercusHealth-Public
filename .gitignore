@@ -1,0 +1,47 @@
+# ── Python ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# ── Virtual environments ─────────────────────────────────
+.venv/
+venv/
+env/
+
+# ── Jupyter ──────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Environment & secrets ────────────────────────────────
+.env
+*.env
+
+# ── Satellite image captures (large, local only) ─────────
+data_scrape/captures/
+data_scrape/captures_ge/
+data_scrape/*.zip
+data_scrape/mosaic_20x20.png
+
+# ── Model weights ────────────────────────────────────────
+models/*.pt
+models/*.pth
+models/*.ckpt
+
+# ── Experiment tracking ──────────────────────────────────
+lightning_logs/
+wandb/
+runs/
+mlruns/
+
+# ── Generated reports (created by notebooks at runtime) ──
+reports/baseline_eval/
+reports/resultados/
+reports/*.png
+
+# ── OS & editor ──────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
