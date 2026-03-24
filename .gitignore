@@ -39,6 +39,12 @@ reports/baseline_eval/
 reports/resultados/
 reports/*.png
 
+# ── Internal build scripts (not needed by end users) ──
+scripts/build_nb*.py
+
+# ── Evaluation temp files ──
+reports/_baseline_gt.csv
+
 # ── OS & editor ──────────────────────────────────────────
 .DS_Store
 Thumbs.db
