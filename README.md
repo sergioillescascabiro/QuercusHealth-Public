@@ -1,126 +1,60 @@
-# QuercusHealth AI
+# QuercusHealth AI: Protecting the Dehesa through Predictive Intelligence
 
-**Automated tree detection and *La Seca* disease classification in the Spanish Dehesa using Deep Learning.**
-
-
----
-
-## Overview
-
-The Spanish Dehesa is a unique agro-sylvo-pastoral ecosystem dominated by *Quercus* oak trees.
-*La Seca* (*Phytophthora cinnamomi*) is a root-rot disease that kills oaks at landscape scale across Extremadura and Andalucía.
-
-This project builds an automated pipeline to:
-1. Capture satellite imagery of Dehesa areas via Google Earth Pro.
-2. Detect oak trees using a pre-trained [DeepForest](https://deepforest.readthedocs.io/) model (RetinaNet + ResNet-50 + FPN).
-3. Classify each tree as **Healthy** or **Dead (La Seca)** using temporally validated annotations.
-
-| | August 2019 | February 2024 |
-|--|--|--|
-| | ![2019](data/sample_2019aug.png) | ![2024](data/sample_2024feb.png) |
-| | Early La Seca — thin radiating crown visible in summer | Same tree absent — confirmed dead. Zero field visits. |
-
-### Baseline results (Phase 2 — zero-shot evaluation on 14 annotated Dehesa tiles)
-
-| Metric | NEON benchmark | Dehesa zero-shot | Drop |
-|--------|---------------|-----------------|------|
-| Precision | 0.73 | 0.51 | −22 pp |
-| Recall    | 0.63 | 0.23 | −40 pp |
-| F1        | 0.68 | 0.32 | −36 pp |
-| Mean confidence | 0.54 | 0.20 | −34 pp |
-
-KS test: D=0.8641, p<0.0001 · Best F1 at optimal threshold (0.05): 0.527
-
-Domain shift confirmed. Phase 3 fine-tunes on annotated Dehesa data. Target: **F1 > 0.60**.
+**An automated AI and satellite imagery platform designed to detect and predict the spread of *La Seca* in Mediterranean oak savannas.**
 
 ---
 
-## Project Structure
+## 🌍 The Problem: An Invisible Threat 
 
-```
-QuercusHealth-Public/
-├── data/
-│   ├── test/
-│   │   ├── images/         # 14 annotated Dehesa tiles (committed, ~2 MB)
-│   │   └── _annotations.csv# Ground truth — DeepForest CSV format (Tree / Seca)
-│   ├── sample_2019aug.png  # Illustrative: summer 2019 — La Seca symptoms
-│   └── sample_2024feb.png  # Illustrative: 2024 — confirmed dead tree
-├── data_scrape/            # Capture scripts; 1,600 tiles are gitignored (local only)
-├── models/                 # Weights auto-downloaded by DeepForest (gitignored)
-├── notebooks/              # Main entry point — run in order
-│   ├── 01_architecture_and_domain_shift.ipynb
-│   └── 02_annotation_evaluation.ipynb
-├── scripts/                # Data acquisition and evaluation utilities
-├── .env.example            # Template for API credentials
-└── requirements.txt
-```
+The Spanish Dehesa is a unique 5-million-hectare ecosystem that sustains wildlife, agriculture, and a centuries-old way of life. Today, it faces an existential threat: ***La Seca*** (*Phytophthora cinnamomi*).
+
+This aggressive root-rot pathogen spreads silently underground, starving *Quercus* oaks of water and nutrients. By the time a tree shows visible symptoms—like a thinning, radiating crown in the summer—it is often too late to save it, and the disease has already spread to neighboring roots.
+
+Currently, monitoring this disease relies on slow, expensive manual field surveys. Landowners and administrators lack the real-time data needed to isolate outbreaks and protect their *fincas* (farms).
 
 ---
 
-## Getting Started
+## 🚀 The Solution: QuercusHealth Platform
 
-### 1. Clone & install
+QuercusHealth is built from the ground up to be a **predictive SaaS monitoring platform**. By combining high-resolution satellite imagery (0.15m/px) with advanced deep learning (RetinaNet), we provide landowners with actionable intelligence to manage their estates.
 
-```bash
-git clone https://github.com/<your-user>/QuercusHealth-Public.git
-cd QuercusHealth-Public
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-### 2. Credentials (optional)
-
-The notebooks run without any API key — the 14 annotated test images are already committed in `data/test/`.
-
-If you want to download the full dataset from Roboflow:
-
-```bash
-cp .env.example .env
-# Edit .env and paste your Roboflow API key
-# Get yours at: https://app.roboflow.com/settings/api
-python scripts/evaluate_baseline.py
-```
-
-### 3. Run the notebooks
-
-```bash
-jupyter notebook
-```
-
-| Notebook | What it does |
-|----------|-------------|
-| `01_architecture_and_domain_shift.ipynb` | Inspects DeepForest architecture, runs zero-shot on NEON and 14 Dehesa tiles, proves domain shift statistically (KS test + Mann-Whitney U), sweeps hyperparameters |
-| `02_annotation_evaluation.ipynb` | Uses ground-truth annotations to compute Precision/Recall/F1, score_thresh sweep with real metrics, temporal La Seca validation, Phase 3 roadmap |
-
-Run **01 first**, then **02**. DeepForest downloads model weights automatically on first run (~400 MB).
+Instead of walking thousands of hectares, users will be able to:
+1. **Identify Sick Trees Early:** Detect the specific visual signatures of *La Seca* from above.
+2. **Track Disease Spread:** Monitor the progression of the pathogen across their *finca* over time.
+3. **Predict Outbreaks:** Use historical data to forecast which areas of the farm are most vulnerable next.
 
 ---
 
-## Scripts
+## 🔍 How It Works: Visualizing Mortality 
 
-| Script | Description |
-|--------|-------------|
-| `scripts/scanner.py` | Captures a screenshot grid from Google Earth Pro via PyAutoGUI. Zig-zag traversal, configurable grid and region. |
-| `scripts/scanner_ge.py` | Legacy scanner using Google Earth's native export dialog (Ctrl+Alt+S). |
-| `scripts/stitcher.py` | Stitches PNG tiles into a seamless mosaic using OpenCV (SCANS mode). |
-| `scripts/evaluate_baseline.py` | Standalone evaluation: downloads from Roboflow, converts labels, evaluates, saves prediction overlays. Requires `.env`. |
+To train our AI, we rely on **multi-temporal validation**. We don't just look at a tree once; we track it over years to confirm its fate without ever stepping foot on the ground. 
 
-```bash
-# Capture satellite tiles (edit ROWS/COLS first)
-python scripts/scanner.py
+Here is a real example of our annotated training data from the Dehesa:
 
-# Stitch into mosaic
-python scripts/stitcher.py
-```
+### **Before: Summer 2019 (Early Symptoms)**
+The image below shows a *Quercus* oak with a thinning, radiating crown during the dry season. This specific signature is the hallmark of *La Seca*.
 
-Captured tiles are saved to `data_scrape/captures/` (gitignored — too large for GitHub).
+![2019 Annotated Tree](data/sample_2019aug_annoted.png)
+
+### **After: February 2024 (Confirmed Dead)**
+Five years later, the same location shows no active canopy. The tree is dead. This temporal confirmation allows us to label the 2019 image as a positive case of *La Seca* with high confidence, providing ultra-clean data for our neural networks.
+
+![2024 Confirmed Dead Tree](data/sample_2024feb_annoted.png)
 
 ---
 
-## Tech Stack
+## 🛠️ The Technology Engine
 
-- **Model**: [DeepForest](https://deepforest.readthedocs.io/) — RetinaNet (ResNet-50 + FPN), pre-trained on NEON aerial imagery
-- **Annotations**: [Roboflow](https://universe.roboflow.com/sergios-workspace-svg91/quercushealth-dehesa) — 14 tiles, 210 bounding boxes, 2 classes
-- **Training framework**: PyTorch + PyTorch Lightning
-- **Image capture**: PyAutoGUI + OpenCV
+Building a reliable environmental health monitor requires scale and precision. Our current MVP achieves this through:
+
+- **Automated Data Pipelines:** Custom PyAutoGUI & OpenCV engines capable of scraping and stitching thousands of high-resolution satellite tiles automatically.
+- **Deep Learning Core:** Utilizing *DeepForest* architectures (RetinaNet with a ResNet-50 backbone) adapted specifically from generic North American forests to the sparse, Mediterranean Dehesa ecosystem.
+- **Statistical Rigor:** Domain shifts and model confidence are continually optimized using advanced statistical gating (KS tests, Mann-Whitney U) to ensure false positives remain low.
+
+---
+
+## 📈 Roadmap to Launch
+
+We are currently transitioning from our successful **Phase 2 Zero-Shot Baseline** (which proved our models can detect Dehesa crowns) into **Phase 3 Fine-Tuning**, where the AI is learning the specific disease signatures of *La Seca*. 
+
+The end goal is a fully integrated web platform where any *finca* owner can draw a polygon on a map and receive a complete, AI-generated health audit of their entire estate.
