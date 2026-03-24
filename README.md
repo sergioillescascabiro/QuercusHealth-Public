@@ -24,11 +24,12 @@ This project builds an automated pipeline to:
 
 | Metric | NEON benchmark | Dehesa zero-shot | Drop |
 |--------|---------------|-----------------|------|
-| Precision | 0.73 | — | — |
-| Recall    | 0.63 | — | — |
-| F1        | 0.68 | — | — |
+| Precision | 0.73 | 0.51 | −22 pp |
+| Recall    | 0.63 | 0.23 | −40 pp |
+| F1        | 0.68 | 0.32 | −36 pp |
+| Mean confidence | 0.54 | 0.20 | −34 pp |
 
-> Run `02_annotation_evaluation.ipynb` to fill in the Dehesa column with real results.
+KS test: D=0.8641, p<0.0001 · Best F1 at optimal threshold (0.05): 0.527
 
 Domain shift confirmed. Phase 3 fine-tunes on annotated Dehesa data. Target: **F1 > 0.60**.
 

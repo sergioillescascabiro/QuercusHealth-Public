@@ -45,6 +45,10 @@ scripts/build_nb*.py
 # ── Evaluation temp files ──
 reports/_baseline_gt.csv
 
+# ── Personal / local-only (never committed) ──────────────
+midterm_presentation/
+data/sample_dehesa.png
+
 # ── OS & editor ──────────────────────────────────────────
 .DS_Store
 Thumbs.db
