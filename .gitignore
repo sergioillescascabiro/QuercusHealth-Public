@@ -12,6 +12,7 @@ env/
 
 # ── Jupyter ──────────────────────────────────────────────
 .ipynb_checkpoints/
+notebooks/*.html
 
 # ── Environment & secrets ────────────────────────────────
 .env
