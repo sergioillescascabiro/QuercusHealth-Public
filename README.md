@@ -10,9 +10,43 @@ Automated detection and health classification of *Quercus ilex* in the Spanish D
 
 ---
 
-## Project Summary
+## The Problem
 
-The Dehesa ecosystem (5M hectares, Spain) is threatened by *La Seca*, a root disease caused by *Phytophthora cinnamomi* that kills Holm Oak (*Quercus ilex*) trees. This project builds a 5-phase deep learning pipeline to automatically detect oak crowns in satellite imagery and classify their health status (Healthy vs. La Seca) using a domain-adapted version of the DeepForest tree crown detector. Starting from a zero-shot F1 of 0.000 for Seca detection, the final end-to-end system achieves F1=0.346 — establishing a meaningful baseline for automated disease monitoring.
+The Spanish Dehesa is a unique 5-million-hectare ecosystem that sustains wildlife, agriculture, and a centuries-old way of life. Today, it faces an existential threat: ***La Seca*** (*Phytophthora cinnamomi*).
+
+This aggressive root-rot pathogen spreads silently underground, starving *Quercus ilex* oaks of water and nutrients. By the time a tree shows visible symptoms — a thinning, radiating crown during the dry season — it is often too late to save it, and the disease has already spread to neighboring roots.
+
+Currently, monitoring relies on slow, expensive manual field surveys. Landowners lack the data needed to isolate outbreaks early.
+
+---
+
+## Multi-Temporal Ground Truth
+
+To train our models with high-confidence labels, we use **multi-temporal validation** — tracking individual trees across years to confirm their fate without field visits.
+
+### Summer 2019 (Early Symptoms)
+
+A *Quercus ilex* with a thinning, radiating crown during the dry season. This visual signature is characteristic of *La Seca* infection.
+
+![2019 Annotated Tree](data/sample_2019aug_annoted.png)
+
+### February 2024 (Confirmed Dead)
+
+The same location five years later shows no active canopy. The tree is dead. This temporal confirmation allows us to label the 2019 image as a positive case of *La Seca* with high confidence, providing clean training data for our neural networks.
+
+![2024 Confirmed Dead Tree](data/sample_2024feb_annoted.png)
+
+---
+
+## Approach
+
+The project addresses the domain shift between pre-trained tree crown detectors (trained on North American temperate forests) and the Mediterranean Dehesa ecosystem through a 5-phase pipeline:
+
+1. **Domain Shift Analysis** — Proves that zero-shot DeepForest fails on Dehesa imagery (KS test D=0.833, confidence drop 56%)
+2. **Formal Evaluation** — Quantifies baseline: F1=0.320 on Dehesa vs 0.68 on native NEON data
+3. **Fine-Tuning** — Domain-adapts DeepForest with hand-annotated Dehesa imagery (LR=1e-4, 30 epochs)
+4. **Two-Stage Pipeline** — Decouples detection from classification: DeepForest detects all trees, ResNet-18 classifies health
+5. **End-to-End Evaluation** — Combines 1-class detector + classifier with IoU-based matching for fully automated inference
 
 ---
 
@@ -25,7 +59,9 @@ The Dehesa ecosystem (5M hectares, Spain) is threatened by *La Seca*, a root dis
 | 4 | Two-stage pipeline (GT crops) | 0.712 | 0.354 |
 | 5 | End-to-end (1-class + classifier) | 0.636 | 0.346 |
 
-Output figures for all phases are committed to `reports/` and `report/figures/`. Notebooks 01, 02, 02b, and 03 contain inline cell outputs as execution evidence. Notebooks 04 and 05 require GPU training to reproduce results (see Reproduction Steps below).
+Starting from a zero-shot F1 of 0.000 for Seca detection, the final system achieves F1=0.346 — establishing a meaningful baseline for automated disease monitoring.
+
+Output figures for all phases are committed to `reports/` and `report/figures/`. Notebooks 01, 02, 02b, and 03 contain inline cell outputs as execution evidence. Notebooks 04 and 05 require GPU training to reproduce results.
 
 ---
 
@@ -36,9 +72,9 @@ notebooks/
   01_architecture_and_domain_shift.ipynb   # Phase 1: Zero-shot baseline + domain shift proof
   02_annotation_evaluation.ipynb           # Phase 2: Formal evaluation on annotated Dehesa data
   02b_preannotation.ipynb                  # Phase 2b: Semi-automated pre-annotation for Roboflow
-  03_fine_tuning.ipynb                     # Phase 3: 2-class fine-tuning of DeepForest [executed, outputs embedded]
-  04_two_stage_pipeline.ipynb              # Phase 4: Detect all trees + ResNet-18 crop classifier [runnable]
-  05_end_to_end.ipynb                      # Phase 5: 1-class detector + classifier end-to-end [runnable]
+  03_fine_tuning.ipynb                     # Phase 3: 2-class fine-tuning [executed, outputs embedded]
+  04_two_stage_pipeline.ipynb              # Phase 4: Detection + ResNet-18 crop classifier [runnable]
+  05_end_to_end.ipynb                      # Phase 5: 1-class detector + classifier e2e [runnable]
 
 scripts/
   scanner.py           # Google Earth Pro tile capture (PyAutoGUI, 18x18 grid)
@@ -96,13 +132,8 @@ The annotated test split (14 images) is included in `data/test/`. Training data 
 
 **To download the full training dataset:**
 1. Copy `.env.example` to `.env`
-2. Add your Roboflow API key: `ROBOFLOW_API_KEY=your_key_here`
+2. Add your Roboflow API key and workspace (see `.env.example` for format)
 3. The training notebooks download the dataset automatically from the `quercushealth-dehesa-summer2019` project
-
-**To re-run data collection (optional):**
-- Open Google Earth Pro at the La Dehesa de la Villa location (Madrid)
-- Run `python scripts/scanner.py` — captures an 18x18 grid of 800x800px tiles using PyAutoGUI
-- Run `python scripts/stitcher.py` to assemble tiles into a mosaic
 
 ### Pre-trained Model Weights
 
@@ -115,7 +146,7 @@ The notebooks download weights automatically at runtime via the HuggingFace Hub.
 
 ### Reproduction Steps
 
-Run the notebooks in order. Each notebook is self-contained and saves its outputs to `reports/`.
+Run the notebooks in order (`jupyter lab` or `jupyter notebook`). Each notebook is self-contained and saves its outputs to `reports/`.
 
 ```
 01_architecture_and_domain_shift.ipynb
@@ -169,25 +200,22 @@ Full list in [`requirements.txt`](requirements.txt). Key packages:
 
 ## Troubleshooting
 
-**`CUDA out of memory` during Phase 3 training**
+**`CUDA out of memory` during Phase 3 training**  
 Reduce batch size in the notebook config cell: `BATCH_SIZE = 2` (default is 4).
 
-**`ROBOFLOW_API_KEY not found` error**
+**`ROBOFLOW_API_KEY not found` error**  
 Copy `.env.example` to `.env` and fill in your Roboflow API key and workspace name.
 
-**`ROBOFLOW_WORKSPACE not found` error**
-Make sure `.env` includes `ROBOFLOW_WORKSPACE=your_workspace_name` (visible in your Roboflow dashboard URL).
-
-**DeepForest downgrades PyTorch after install**
+**DeepForest downgrades PyTorch after install**  
 Re-run the CUDA-specific torch install after installing deepforest:
 ```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
 ```
 
-**Notebook 04 or 05: `train.csv` not found**
+**Notebook 04 or 05: `train.csv` not found**  
 These CSVs are generated by notebook 03 (Phase 3) when it downloads the Roboflow dataset. Run 03 first.
 
-**`ModuleNotFoundError: omegaconf`**
+**`ModuleNotFoundError: omegaconf`**  
 Run `pip install omegaconf` or re-install all requirements: `pip install -r requirements.txt`.
 
 ---
