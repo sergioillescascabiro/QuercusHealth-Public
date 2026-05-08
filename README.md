@@ -84,6 +84,14 @@ scripts/
 
 data/
   test/                # 14 annotated test images with bounding box CSV
+  sample_*.png         # Multi-temporal reference images (2019/2024, annotated)
+
+data_scrape/
+  README.md            # Instructions for re-running tile capture
+  captures/            # (gitignored) Raw PNG tiles from scanner.py (~2 GB)
+
+models/
+  README.md            # Points to HuggingFace for weight downloads
 
 reports/
   *.png                # Output figures from all pipeline phases
