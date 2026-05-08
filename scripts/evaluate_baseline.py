@@ -37,10 +37,17 @@ if not ROBOFLOW_API_KEY:
 
 # ==========================================
 # ROBOFLOW PROJECT CONFIGURATION
+# (set these in .env or as environment variables)
 # ==========================================
-ROBOFLOW_WORKSPACE = "sergios-workspace-svg91"
-ROBOFLOW_PROJECT   = "quercushealth-dehesa"
-ROBOFLOW_VERSION   = 1
+ROBOFLOW_WORKSPACE = os.getenv("ROBOFLOW_WORKSPACE", "")
+ROBOFLOW_PROJECT   = os.getenv("ROBOFLOW_PROJECT", "quercushealth-dehesa-summer2019")
+ROBOFLOW_VERSION   = int(os.getenv("ROBOFLOW_VERSION", "1"))
+
+if not ROBOFLOW_WORKSPACE:
+    raise EnvironmentError(
+        "ROBOFLOW_WORKSPACE not found. "
+        "Add it to your .env file (see .env.example)."
+    )
 
 
 def find_image_dir(base_dir):

@@ -1,0 +1,97 @@
+% NeurIPS 2024 Style File (adapted from public template)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{neurips_2024}[2024/05/01 NeurIPS 2024 style]
+
+% ---------------------------------------------------------------------------
+% Options
+% ---------------------------------------------------------------------------
+\newif\if@preprint \@preprintfalse
+\newif\if@final   \@finalfalse
+\DeclareOption{preprint}{\@preprinttrue}
+\DeclareOption{final}{\@finaltrue}
+\ProcessOptions\relax
+
+% ---------------------------------------------------------------------------
+% Required packages
+% ---------------------------------------------------------------------------
+\RequirePackage{times}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{microtype}
+\RequirePackage[
+  letterpaper,
+  top=1in,
+  bottom=1in,
+  left=0.75in,
+  right=0.75in,
+  columnsep=0.28in
+]{geometry}
+\RequirePackage[font=small,labelfont=bf,labelsep=period]{caption}
+\RequirePackage[hidelinks,
+  pdftitle={QuercusHealth AI},
+  pdfauthor={Sergio Illescas}
+]{hyperref}
+
+% ---------------------------------------------------------------------------
+% Paragraph spacing
+% ---------------------------------------------------------------------------
+\setlength{\parindent}{0.15in}
+\setlength{\parskip}{2pt plus 1pt minus 1pt}
+
+% ---------------------------------------------------------------------------
+% Title block
+% ---------------------------------------------------------------------------
+\renewcommand{\@maketitle}{%
+  \newpage\null
+  \vskip 0.2in
+  \begin{center}
+    {\Large\bfseries \@title \par}%
+    \vskip 0.12in
+    {\normalsize \@author \par}%
+  \end{center}%
+  \vskip 0.15in
+}
+
+% ---------------------------------------------------------------------------
+% Abstract
+% ---------------------------------------------------------------------------
+\renewenvironment{abstract}{%
+  \small
+  \begin{center}{\bfseries Abstract}\end{center}%
+  \begin{quotation}\noindent\ignorespaces
+}{%
+  \end{quotation}
+  \vskip 0.1in
+}
+
+% ---------------------------------------------------------------------------
+% Section formatting
+% ---------------------------------------------------------------------------
+\RequirePackage{titlesec}
+\titleformat{\section}
+  {\normalfont\large\bfseries}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{10pt plus 2pt minus 2pt}{4pt plus 1pt minus 1pt}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{8pt plus 2pt minus 2pt}{3pt plus 1pt}
+
+\titleformat{\subsubsection}[runin]
+  {\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}[.]
+\titlespacing*{\subsubsection}{0pt}{6pt plus 1pt}{0.5em}
+
+% ---------------------------------------------------------------------------
+% Footnotes
+% ---------------------------------------------------------------------------
+\setlength{\footnotesep}{6pt}
+
+% ---------------------------------------------------------------------------
+% Floats
+% ---------------------------------------------------------------------------
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{10pt plus 2pt minus 4pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+
+% ---------------------------------------------------------------------------
+% Page style
+% ---------------------------------------------------------------------------
+\pagestyle{plain}
