@@ -77,9 +77,6 @@ notebooks/
   05_end_to_end.ipynb                      # Phase 5: 1-class detector + classifier e2e [runnable]
 
 scripts/
-  scanner.py           # Google Earth Pro tile capture (PyAutoGUI, 18x18 grid)
-  scanner_ge.py        # Legacy scanner using Google Earth export dialog
-  stitcher.py          # Stitch captured tiles into a mosaic (OpenCV)
   evaluate_baseline.py # Standalone zero-shot evaluation pipeline
 
 data/
@@ -87,8 +84,10 @@ data/
   sample_*.png         # Multi-temporal reference images (2019/2024, annotated)
 
 data_scrape/
-  README.md            # Instructions for re-running tile capture
-  captures/            # (gitignored) Raw PNG tiles from scanner.py (~2 GB)
+  scanner.py           # Google Earth Pro tile capture (PyAutoGUI, zig-zag grid)
+  scanner_ge.py        # Legacy scanner using Google Earth export dialog
+  stitcher.py          # Stitch captured tiles into a mosaic (OpenCV)
+  captures/            # (gitignored) Raw PNG tiles (~2 GB)
 
 models/
   README.md            # Points to HuggingFace for weight downloads

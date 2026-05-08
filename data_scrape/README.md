@@ -1,21 +1,27 @@
 # data_scrape/
 
-This directory holds the raw satellite tile captures produced by `scripts/scanner.py`.
+Scripts and output directory for automated satellite tile capture from Google Earth Pro.
 
 ```
 data_scrape/
-├── captures/        # PNG tiles (gitignored — run scanner.py to generate locally)
-└── mosaic.png       # Stitched panorama produced by stitcher.py (gitignored)
+├── scanner.py       # Primary capture script (PyAutoGUI, zig-zag grid)
+├── scanner_ge.py    # Legacy scanner using Google Earth's native export dialog
+├── stitcher.py      # Stitches captured tiles into a mosaic (OpenCV)
+├── captures/        # PNG tiles (gitignored — ~2 GB, run scanner.py to generate locally)
+└── mosaic.png       # Stitched panorama (gitignored, produced by stitcher.py)
 ```
+
+## How to run
+
+Run from the **project root**:
+
+```bash
+python data_scrape/scanner.py    # capture grid from Google Earth Pro
+python data_scrape/stitcher.py   # stitch tiles into mosaic.png
+```
+
+See `data_scrape/scanner.py` for configuration (grid size, screen region, render wait times).
 
 ## Why captures are gitignored
 
-A full 40×40 capture grid produces 1,600 PNG files (~2 GB).
-These are too large for GitHub and must be generated locally by running:
-
-```bash
-python scripts/scanner.py   # capture grid from Google Earth Pro
-python scripts/stitcher.py  # stitch tiles into mosaic.png
-```
-
-See `scripts/scanner.py` for configuration (grid size, screen region, render wait times).
+A full 40×40 capture grid produces 1,600 PNG files (~2 GB) — too large for GitHub.
