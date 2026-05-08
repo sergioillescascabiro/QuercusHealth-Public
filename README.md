@@ -128,19 +128,31 @@ pip install -r requirements.txt
 
 ### Dataset
 
-The annotated test split (14 images) is included in `data/test/`. Training data is hosted on Roboflow.
+The annotated test split (14 images) is included in `data/test/`. The full training dataset is hosted on Roboflow.
 
-**To download the full training dataset:**
+**Direct download (no account required):**  
+[https://app.roboflow.com/ds/lhbhwAM9HN?key=xqoQlM4K1Y](https://app.roboflow.com/ds/lhbhwAM9HN?key=xqoQlM4K1Y)
+
+**For notebook auto-download via the Roboflow API:**
 1. Copy `.env.example` to `.env`
-2. Add your Roboflow API key and workspace (see `.env.example` for format)
-3. The training notebooks download the dataset automatically from the `quercushealth-dehesa-summer2019` project
+2. Fill in your Roboflow API key and workspace name (see `.env.example`)
+3. The notebooks download the dataset automatically at runtime
+
+Dataset details:
+- **Project**: `quercushealth-dehesa-summer2019` (version 1)
+- **Format**: Pascal VOC (used by DeepForest)
+- **Train**: 243 images · **Val**: 18 · **Test**: 17
+- **Classes**: `Healthy` (6,449 annotations), `Seca` (892 annotations)
 
 ### Pre-trained Model Weights
 
-Model weights are hosted on HuggingFace (too large for git):
+Model weights are hosted on HuggingFace (too large for git):  
+[sillescas/deepforest-dehesa-quercus](https://huggingface.co/sillescas/deepforest-dehesa-quercus)
 
-- **DeepForest fine-tuned detector** (Phase 3): [sillescas/deepforest-dehesa-quercus](https://huggingface.co/sillescas/deepforest-dehesa-quercus)
-- **ResNet-18 crop classifier** (Phase 4/5): included in the same HuggingFace repo as `stage2_classifier.pt`
+| File | Phase | Architecture | Size |
+|------|-------|-------------|------|
+| `deepforest_dehesa_finetuned.pt` | 3 | RetinaNet + ResNet-50 | 257 MB |
+| `stage2_classifier.pt` | 4/5 | ResNet-18 crop classifier | 45 MB |
 
 The notebooks download weights automatically at runtime via the HuggingFace Hub.
 
