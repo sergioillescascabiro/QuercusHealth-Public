@@ -14,7 +14,7 @@ Automated detection and health classification of *Quercus ilex* in the Spanish D
 
 The Spanish Dehesa is a unique 5-million-hectare ecosystem that sustains wildlife, agriculture, and a centuries-old way of life. Today, it faces an existential threat: ***La Seca*** (*Phytophthora cinnamomi*).
 
-This aggressive root-rot pathogen spreads silently underground, starving *Quercus ilex* oaks of water and nutrients. By the time a tree shows visible symptoms — a thinning, radiating crown during the dry season — it is often too late to save it, and the disease has already spread to neighboring roots.
+This aggressive root-rot pathogen spreads silently underground, starving *Quercus ilex* oaks of water and nutrients. By the time a tree shows visible symptoms - a thinning, radiating crown during the dry season - it is often too late to save it, and the disease has already spread to neighboring roots.
 
 Currently, monitoring relies on slow, expensive manual field surveys. Landowners lack the data needed to isolate outbreaks early.
 
@@ -42,11 +42,11 @@ The same location five years later shows no active canopy. The tree is dead. Thi
 
 The project addresses the domain shift between pre-trained tree crown detectors (trained on North American temperate forests) and the Mediterranean Dehesa ecosystem through a 5-phase pipeline:
 
-1. **Domain Shift Analysis** — Proves that zero-shot DeepForest fails on Dehesa imagery (KS test D=0.833, confidence drop 56%)
-2. **Formal Evaluation** — Quantifies baseline: F1=0.320 on Dehesa vs 0.68 on native NEON data
-3. **Fine-Tuning** — Domain-adapts DeepForest with hand-annotated Dehesa imagery (LR=1e-4, 30 epochs)
-4. **Two-Stage Pipeline** — Decouples detection from classification: DeepForest detects all trees, ResNet-18 classifies health
-5. **End-to-End Evaluation** — Combines 1-class detector + classifier with IoU-based matching for fully automated inference
+1. **Domain Shift Analysis** - Proves that zero-shot DeepForest fails on Dehesa imagery (KS test D=0.833, confidence drop 56%)
+2. **Formal Evaluation** - Quantifies baseline: F1=0.320 on Dehesa vs 0.68 on native NEON data
+3. **Fine-Tuning** - Domain-adapts DeepForest with hand-annotated Dehesa imagery (LR=1e-4, 30 epochs)
+4. **Two-Stage Pipeline** - Decouples detection from classification: DeepForest detects all trees, ResNet-18 classifies health
+5. **End-to-End Evaluation** - Combines 1-class detector + classifier with IoU-based matching for fully automated inference
 
 ---
 
@@ -59,7 +59,7 @@ The project addresses the domain shift between pre-trained tree crown detectors 
 | 4 | Two-stage pipeline (GT crops) | 0.712 | 0.354 |
 | 5 | End-to-end (1-class + classifier) | 0.636 | 0.346 |
 
-Starting from a zero-shot F1 of 0.000 for Seca detection, the final system achieves F1=0.346 — establishing a meaningful baseline for automated disease monitoring.
+Starting from a zero-shot F1 of 0.000 for Seca detection, the final system achieves F1=0.346 - establishing a meaningful baseline for automated disease monitoring.
 
 Output figures for all phases are committed to `reports/` and `report/figures/`. Notebooks 01, 02, 02b, and 03 contain inline cell outputs as execution evidence. Notebooks 04 and 05 require GPU training to reproduce results.
 
