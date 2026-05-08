@@ -30,14 +30,22 @@ models/*.ckpt
 
 # ── Experiment tracking ──────────────────────────────────
 lightning_logs/
+**/lightning_logs/
 wandb/
 runs/
 mlruns/
 
+# ── LaTeX build artifacts ──────────────────────────────
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.log
+report/*.out
+report/*.synctex.gz
+
 # ── Generated reports (created by notebooks at runtime) ──
 reports/baseline_eval/
 reports/resultados/
-reports/*.png
 
 # ── Internal build scripts (not needed by end users) ──
 scripts/build_nb*.py

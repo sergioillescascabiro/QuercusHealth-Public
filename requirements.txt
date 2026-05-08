@@ -14,7 +14,13 @@ jupyter
 pandas
 numpy
 matplotlib
+scipy           # Statistical tests (KS test, Mann-Whitney U)
+seaborn         # Confusion matrix heatmaps
+scikit-learn    # Classification metrics (F1, precision, recall)
 Pillow
+
+# Augmentation
+albumentations  # Image augmentation in Phase 4
 
 # Automation & Utilities
 pyautogui       # Keyboard/mouse automation for the scanner scripts
