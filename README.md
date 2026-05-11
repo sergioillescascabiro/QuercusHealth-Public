@@ -2,9 +2,7 @@
 
 Automated detection and health classification of *Quercus ilex* in the Spanish Dehesa using domain-adapted aerial imagery and deep learning.
 
-**Course:** ITMD-524 Applied AI & Deep Learning, Spring 2026  
 **Author:** Sergio Illescas Cabiro  
-**Institution:** Illinois Institute of Technology  
 **Paper:** [`report/main.pdf`](report/main.pdf)  
 **Model weights:** [sillescas/deepforest-dehesa-quercus](https://huggingface.co/sillescas/deepforest-dehesa-quercus)
 
